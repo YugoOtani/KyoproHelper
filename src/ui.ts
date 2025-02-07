@@ -25,7 +25,7 @@ export function ProblemTitle(problem: Problem): string {
     return `Problem ${problem.diff.toUpperCase()}`;
 }
 export function TestCaseTitle(index: number): string {
-    return `Test Case ${index + 1}`;
+    return `Test Case ${index}`;
 }
 export function TestCaseViewBeforeExec(input: string, expected_output: string): string {
     return `

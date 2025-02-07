@@ -1,30 +1,26 @@
 import * as child_process from "child_process";
 import { WebView } from "./webView";
-import { TestCaseViewFail, TestCaseViewSuccess } from "./ui";
-import { TestCasesProvider } from "./testCasesProvider";
+import { TestCaseViewFail, TestCaseViewHtml, TestCaseViewSuccess } from "./ui";
 import * as vscode from "vscode";
-import { Problem } from "./problem";
-import * as fs from "fs";
-import * as path from "path";
-const sampleInputFilePath = "contest.json";
+import { TestCase } from "./problem";
+import { runTestCommandId } from "./extension";
 
-const commandId = "testCasesView.runTest";
-const treeViewId = "testCasesView";
+const commandTitle = "Run Test";
 
-export function activateRunTest(context: vscode.ExtensionContext) {
-    const workspaceRoot = getCurrentWorkspaceRoot();
-    if (workspaceRoot === undefined) {
-        return;
-    }
-    const provider = new TestCasesProvider(loadTestCases());
-
-    vscode.window.registerTreeDataProvider(treeViewId, provider);
-
-    context.subscriptions.push(
-        vscode.commands.registerCommand(commandId, (index: number, input: string, output: string) => {
-            runTest(index, input, output, workspaceRoot || "", context.extensionUri);
-        })
-    );
+// TestCaseを受け取って実行するコマンドを返す
+// treeViewに渡すコールバックのようなもの
+export function getRunTestCommand(t: TestCase) {
+    return {
+        command: runTestCommandId,
+        title: commandTitle,
+        arguments: [t.id, t.input, t.output]
+    };
+}
+// テストケースを実行するコマンドのハンドラを返す
+export function getRunTestCommandHandler(workspaceRoot: string, extensionUri: vscode.Uri) {
+    return (index: number, input: string, expected_output: string) => {
+        runTest(index, input, expected_output, workspaceRoot, extensionUri);
+    };
 }
 
 function runTest(index: number, input: string, expected_output: string, workspaceRoot: string, extensionUri: vscode.Uri) {
@@ -44,38 +40,6 @@ function runTest(index: number, input: string, expected_output: string, workspac
         ? TestCaseViewSuccess(index, input, output)
         : TestCaseViewFail(index, input, expected, output);
 
-    WebView.show(extensionUri, content);
+    WebView.show(extensionUri, TestCaseViewHtml(content));
 }
-function loadTestCases(): Problem[] {
-    const workspaceRoot = getCurrentWorkspaceRoot();
-    if (workspaceRoot === undefined) {
-        return [];
-    }
-    const filePath = path.join(workspaceRoot, sampleInputFilePath);
-    if (fs.existsSync(filePath)) {
-        const s = fs.readFileSync(filePath, "utf-8");
-        const json = JSON.parse(s);
-        let problems = [];
-        for (const problem of json.problem) {
-            const diff = problem.diff
-            const cases = problem.expected_in_out.map((x: string[]) => ({ input: x[0], output: x[1] }));
-            problems.push(new Problem(diff, cases))
-        }
-        return problems;
-    } else {
-        vscode.window.showErrorMessage(`File not found: ${filePath}`);
-        return [];
-    }
-}
-function getCurrentWorkspaceRoot(): string | undefined {
-    const folders = vscode.workspace.workspaceFolders;
-    if (folders === undefined) {
-        vscode.window.showErrorMessage("No workspace is opened.");
-        return undefined;
-    } else if (folders.length === 1) {
-        return folders[0].uri.fsPath;
-    } else {
-        vscode.window.showErrorMessage("Multi-root workspace is not supported.");
-        return undefined;
-    }
-}
+

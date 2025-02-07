@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { TestCaseViewHtml } from "./ui";
 const panelTitle = "Test Results";
 const panelId = "testResults";
 
@@ -30,7 +29,7 @@ export class WebView {
     }
 
     public update(content: string) {
-        this.panel.webview.html = TestCaseViewHtml(content);
+        this.panel.webview.html = content;
     }
 
     public dispose() {
