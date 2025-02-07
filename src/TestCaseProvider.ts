@@ -79,9 +79,25 @@ class TestCaseItem extends vscode.TreeItem {
         super(label, collapsibleState);
     }
 }
+function getCurrentWorkspaceRoot(): string | undefined {
+    const folders = vscode.workspace.workspaceFolders;
+    if (folders === undefined) {
+        vscode.window.showErrorMessage("No workspace is opened.");
+        return undefined;
+    } else if (folders.length === 1) {
+        return folders[0].uri.fsPath;
+    } else {
+        vscode.window.showErrorMessage("Multi-root workspace is not supported.");
+        return undefined;
+    }
+}
 
 export function activateTreeView(context: vscode.ExtensionContext) {
-    const provider = new TestCasesProvider(vscode.workspace.rootPath || "");
+    const workspaceRoot = getCurrentWorkspaceRoot();
+    if (workspaceRoot === undefined) {
+        return;
+    }
+    const provider = new TestCasesProvider(workspaceRoot || "");
 
     vscode.window.registerTreeDataProvider("testCasesView", provider);
 
@@ -93,7 +109,7 @@ export function activateTreeView(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         vscode.commands.registerCommand("testCasesView.runTest", (input: string, output: string) => {
-            runTest(input, output, vscode.workspace.rootPath || "", context.extensionUri);
+            runTest(input, output, workspaceRoot || "", context.extensionUri);
         })
     );
 }
