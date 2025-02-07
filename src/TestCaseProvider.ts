@@ -3,13 +3,14 @@ import * as fs from "fs";
 import * as path from "path";
 import * as child_process from "child_process";
 import { TestCasesPanel } from "./testResultPanel";
+import { Problem } from "./data/problem";
 
 class TestCasesProvider implements vscode.TreeDataProvider<TestCaseItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
     readonly onDidChangeTreeData: vscode.Event<void> = this._onDidChangeTreeData.event;
 
     private selectedProblem: string = "A";
-    private testCases: { [key: string]: { input: string; output: string }[] } = {};
+    private problems: Problem[] = [];
     constructor(private workspaceRoot: string) {
         this.loadTestCases();
     }
@@ -17,14 +18,12 @@ class TestCasesProvider implements vscode.TreeDataProvider<TestCaseItem> {
     private loadTestCases(): void {
         const filePath = path.join(this.workspaceRoot, "contest.json");
         if (fs.existsSync(filePath)) {
-            const data = fs.readFileSync(filePath, "utf-8");
-            const json = JSON.parse(data);
+            const s = fs.readFileSync(filePath, "utf-8");
+            const json = JSON.parse(s);
             for (const problem of json.problem) {
-                const key = problem.diff
-                const in_out = problem.expected_in_out.map((x: string[]) => {
-                    return { input: x[0], output: x[1] }
-                })
-                this.testCases[key] = in_out
+                const diff = problem.diff
+                const cases = problem.expected_in_out.map((x: string[]) => ({ input: x[0], output: x[1] }));
+                this.problems.push(new Problem(diff, cases))
             }
         } else {
             vscode.window.showErrorMessage("contest.json not found.");
@@ -37,18 +36,19 @@ class TestCasesProvider implements vscode.TreeDataProvider<TestCaseItem> {
 
     getChildren(element?: TestCaseItem): Thenable<TestCaseItem[]> {
         if (!element) {
-            return Promise.resolve([
-                new TestCaseItem("Problem A", "a", vscode.TreeItemCollapsibleState.Collapsed),
-                new TestCaseItem("Problem B", "b", vscode.TreeItemCollapsibleState.Collapsed),
-                new TestCaseItem("Problem C", "c", vscode.TreeItemCollapsibleState.Collapsed),
-                new TestCaseItem("Problem D", "d", vscode.TreeItemCollapsibleState.Collapsed),
-                new TestCaseItem("Problem E", "e", vscode.TreeItemCollapsibleState.Collapsed),
-            ]);
+            // ルート要素の場合 -> 問題一覧を表示
+            const items = this.problems.map((p) => {
+                const label = `Problem ${p.diff.toUpperCase()}`;
+                return new TestCaseItem(label, p, vscode.TreeItemCollapsibleState.Collapsed);
+            });
+            items.sort((a, b) => a.problem.diff.localeCompare(b.problem.diff));
+            return Promise.resolve(items);
         } else {
-            const cases = this.testCases[element.problemId.toLowerCase()] || [];
-            return Promise.resolve(cases.map((tc, index) => new TestCaseItem(
-                `Test ${index + 1}: ${tc.input.trim()} → ${tc.output.trim()}`,
-                element.problemId,
+            // 問題の場合 -> テストケース一覧を表示
+            const problem = element.problem;
+            return Promise.resolve(problem.cases.map((tc, index) => new TestCaseItem(
+                `Test ${index + 1}`,
+                problem,
                 vscode.TreeItemCollapsibleState.None,
                 {
                     command: "testCasesView.runTest",
@@ -72,7 +72,7 @@ class TestCasesProvider implements vscode.TreeDataProvider<TestCaseItem> {
 class TestCaseItem extends vscode.TreeItem {
     constructor(
         label: string,
-        public readonly problemId: string,
+        public readonly problem: Problem,
         collapsibleState: vscode.TreeItemCollapsibleState,
         public readonly command?: vscode.Command
     ) {
