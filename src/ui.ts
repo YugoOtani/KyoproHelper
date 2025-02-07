@@ -1,4 +1,25 @@
-import { Problem } from "../data/problem";
+import { Problem } from "./problem";
+
+export function TestCaseViewHtml(content: string): string {
+    return `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Test Results</title>
+                <style>
+                    body { font-family: sans-serif; padding: 20px; }
+                    .success { color: green; }
+                    .fail { color: red; }
+                </style>
+            </head>
+            <body>
+                ${content}
+            </body>
+            </html>
+        `;
+}
 
 export function ProblemTitle(problem: Problem): string {
     return `Problem ${problem.diff.toUpperCase()}`;
