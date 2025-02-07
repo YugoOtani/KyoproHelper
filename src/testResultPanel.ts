@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
-export class TestResultsPanel {
-    public static currentPanel: TestResultsPanel | undefined;
+export class TestCasesPanel {
+    public static currentPanel: TestCasesPanel | undefined;
     private readonly panel: vscode.WebviewPanel;
     private disposables: vscode.Disposable[] = [];
 
@@ -17,12 +17,12 @@ export class TestResultsPanel {
     }
 
     public static show(extensionUri: vscode.Uri, content: string) {
-        if (TestResultsPanel.currentPanel) {
-            TestResultsPanel.currentPanel.update(content);
-            TestResultsPanel.currentPanel.panel.reveal();
+        if (TestCasesPanel.currentPanel) {
+            TestCasesPanel.currentPanel.update(content);
+            TestCasesPanel.currentPanel.panel.reveal();
         } else {
-            TestResultsPanel.currentPanel = new TestResultsPanel(extensionUri);
-            TestResultsPanel.currentPanel.update(content);
+            TestCasesPanel.currentPanel = new TestCasesPanel(extensionUri);
+            TestCasesPanel.currentPanel.update(content);
         }
     }
 
@@ -53,7 +53,7 @@ export class TestResultsPanel {
     }
 
     public dispose() {
-        TestResultsPanel.currentPanel = undefined;
+        TestCasesPanel.currentPanel = undefined;
         this.panel.dispose();
         this.disposables.forEach(d => d.dispose());
     }

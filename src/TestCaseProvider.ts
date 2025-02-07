@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
 import * as child_process from "child_process";
-import { TestResultsPanel } from "./testResultPanel";
+import { TestCasesPanel } from "./testResultPanel";
 
 class TestCasesProvider implements vscode.TreeDataProvider<TestCaseItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
@@ -127,5 +127,5 @@ export function runTest(input: string, expected_output: string, workspaceRoot: s
         content += `<p>Got: <code>${output}</code></p>`;
     }
 
-    TestResultsPanel.show(extensionUri, content);
+    TestCasesPanel.show(extensionUri, content);
 }
