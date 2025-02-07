@@ -45,7 +45,6 @@ export class TestCasesPanel {
                 </style>
             </head>
             <body>
-                <h1>Test Results</h1>
                 ${content}
             </body>
             </html>

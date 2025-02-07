@@ -14,10 +14,6 @@
   "contributes": {
     "commands": [
       {
-        "command": "testCasesView.selectProblem",
-        "title": "Select Problem"
-      },
-      {
         "command": "testCasesView.runTest",
         "title": "Run Test"
       },
