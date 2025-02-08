@@ -15,12 +15,30 @@ export class WebView {
             { enableScripts: true }
         );
 
+
         this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
     }
 
-    public static show(extensionUri: vscode.Uri, content: string) {
+    public static setMessageHandler(
+        handler: (message: any) => void,
+        extensionUri: vscode.Uri
+    ) {
+        if (!WebView.currentPanel) {
+            WebView.currentPanel = new WebView(extensionUri);
+        }
+        WebView.currentPanel.panel.webview.onDidReceiveMessage(
+            handler,
+            undefined,
+            WebView.currentPanel.disposables
+        )
+    }
+
+    public static show(
+        extensionUri: vscode.Uri,
+        content: string) {
         if (WebView.currentPanel) {
-            WebView.currentPanel.update(content);
+            const p = WebView.currentPanel;
+            p.update(content);
             WebView.currentPanel.panel.reveal();
         } else {
             WebView.currentPanel = new WebView(extensionUri);

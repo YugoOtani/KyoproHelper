@@ -1,6 +1,31 @@
-import { Problem } from "./problem";
+import { AppState } from "./appState";
 
-export function TestCaseViewHtml(content: string): string {
+export type TestCaseViewKind = "beforeExec" | "success" | "fail";
+
+export class TestCaseViewState {
+    constructor(
+        public kind: TestCaseViewKind,
+        public diff: string,
+        public case_id: number,
+        public actual_output: string,
+    ) { }
+}
+
+export function TestCaseViewHtml(state: TestCaseViewState): string {
+    let content: string;
+
+    switch (state.kind) {
+        case "beforeExec":
+            content = TestCaseViewBeforeExec(state);
+            break;
+        case "success":
+            content = TestCaseViewSuccess(state);
+            break;
+        case "fail":
+            content = TestCaseViewFail(state);
+            break;
+    }
+
     return `
             <!DOCTYPE html>
             <html lang="en">
@@ -16,44 +41,78 @@ export function TestCaseViewHtml(content: string): string {
             </head>
             <body>
                 ${content}
+                <button onclick="runTest('${state.diff}', ${state.case_id})">Run Test</button>
+                <div id="result"></div>
+                <script>
+                    const vscode = acquireVsCodeApi();
+                    function runTest(diff, case_id) {
+                        vscode.postMessage({ command: "runTest", diff, case_id });
+                    }
+                    window.addEventListener("message", event => {
+                        document.getElementById("result").innerHTML = event.data.result;
+                    })
+                </script>
             </body>
+
             </html>
         `;
 }
 
-export function ProblemTitle(problem: Problem): string {
-    return `Problem ${problem.diff.toUpperCase()}`;
+export function ProblemTitle(diff: string): string {
+    return `Problem ${diff.toUpperCase()}`;
 }
 export function TestCaseTitle(index: number): string {
     return `Test Case ${index}`;
 }
-export function TestCaseViewBeforeExec(input: string, expected_output: string): string {
+function TestCaseViewBeforeExec(state: TestCaseViewState): string {
+    const case1 = AppState.getCase(state.diff, state.case_id);
+    if (case1 === undefined) {
+        return "Test case not found";
+    }
     return `
+        <h2>${TestCaseTitle(state.case_id)}</h2>
         <h2>Input</h2>
-        <pre>${input}</pre>
+        <pre>${case1.input}</pre>
         <h2>Output</h2>
-        <pre>${expected_output}</pre>
+        <pre>${case1.output}</pre>
     `;
 }
-export function TestCaseViewSuccess(index: number, input: string, output: string): string {
+function TestCaseViewSuccess(state: TestCaseViewState): string {
+    const case1 = AppState.getCase(state.diff, state.case_id);
+    if (case1 === undefined) {
+        return "Test case not found";
+    }
     return `
-        <h2>${TestCaseTitle(index)}</h2>
+        <h2>${TestCaseTitle(state.case_id)}</h2>
         <h2>Input</h2>
-        <pre>${input}</pre>
+        <pre>${case1.input}</pre>
         <h2>Output</h2>
-        <pre class="success">${output}</pre>
+        <pre class="success">${case1.output}</pre>
         <p class="success">✅ Passed</p>
     `;
 }
-export function TestCaseViewFail(index: number, input: string, expected: string, actual: string): string {
+function TestCaseViewFail(state: TestCaseViewState): string {
+    const case1 = AppState.getCase(state.diff, state.case_id);
+    if (case1 === undefined) {
+        return "Test case not found";
+    }
     return `
-        <h2>${TestCaseTitle(index)}</h2>
+        <h2>${TestCaseTitle(state.case_id)}</h2>
         <h2>Input</h2>
-        <pre>${input}</pre>
+        <pre>${case1.input}</pre>
         <h2>Expected Output</h2>
-        <pre>${expected}</pre>
+        <pre>${case1.output}</pre>
         <h2>Actual Output</h2>
-        <pre class="fail">${actual}</pre>
+        <pre class="fail">${state.actual_output}</pre>
         <p class="fail">❌ Failed</p>
     `;
+}
+function getNonce() {
+    let text = "";
+    const possible =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for (let i = 0; i < 32; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
 }

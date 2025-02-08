@@ -1,17 +1,15 @@
 import * as vscode from "vscode";
-import { Problem, TestCase } from "./problem";
 import { ProblemTitle, TestCaseTitle } from "./ui";
+import { AppState } from "./appState";
 
 // サイドバーに表示する問題とテストケースの構造を定義
 export class TestCasesProvider implements vscode.TreeDataProvider<TestCaseTreeItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
     readonly onDidChangeTreeData: vscode.Event<void> = this._onDidChangeTreeData.event;
 
-    private problems: Problem[];
-    private onTestCaseSelected: (t: TestCase) => vscode.Command;
-    constructor(problems: Problem[], onTestCaseSelected: (t: TestCase) => vscode.Command) {
+    private onTestCaseSelected: (diff: string, caseId: number) => vscode.Command;
+    constructor(onTestCaseSelected: (diff: string, caseId: number) => vscode.Command) {
         this.onTestCaseSelected = onTestCaseSelected;
-        this.problems = problems;
     }
 
     getTreeItem(element: TestCaseTreeItem): vscode.TreeItem {
@@ -21,21 +19,22 @@ export class TestCasesProvider implements vscode.TreeDataProvider<TestCaseTreeIt
     getChildren(element?: TestCaseTreeItem): Thenable<TestCaseTreeItem[]> {
         if (!element) {
             // ルート要素の場合 -> 問題一覧を表示
-            const items = this.problems.map((p) => {
-                const label = ProblemTitle(p);
-                return new TestCaseTreeItem(label, p, vscode.TreeItemCollapsibleState.Collapsed);
+            const diffs = AppState.getDiffList();
+            diffs.sort();
+            const items = diffs.map((diff) => {
+                const problem = AppState.getCaseList(diff);
+                return new TestCaseTreeItem(diff, ProblemTitle(diff), problem, vscode.TreeItemCollapsibleState.Collapsed);
             });
-            items.sort((a, b) => a.problem.diff.localeCompare(b.problem.diff));
             return Promise.resolve(items);
         } else {
             // 問題の場合 -> テストケース一覧を表示
-            const problem = element.problem;
-            return Promise.resolve(problem.cases.map((tc) => new TestCaseTreeItem(
-                TestCaseTitle(tc.id),
-                problem,
+            return Promise.resolve(element.cases.map((caseId) => new TestCaseTreeItem(
+                element.diff,
+                TestCaseTitle(caseId),
+                element.cases,
                 vscode.TreeItemCollapsibleState.None,
                 // 選択時にコマンドが実行される
-                this.onTestCaseSelected(tc),
+                this.onTestCaseSelected(element.diff, caseId),
             )));
         }
     }
@@ -48,8 +47,9 @@ export class TestCasesProvider implements vscode.TreeDataProvider<TestCaseTreeIt
 
 class TestCaseTreeItem extends vscode.TreeItem {
     constructor(
+        public diff: string,
         label: string,
-        public readonly problem: Problem,
+        public readonly cases: number[],
         collapsibleState: vscode.TreeItemCollapsibleState,
         public readonly command?: vscode.Command
     ) {
