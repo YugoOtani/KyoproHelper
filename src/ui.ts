@@ -12,17 +12,30 @@ export class TestCaseViewState {
 }
 
 export function TestCaseViewHtml(state: TestCaseViewState): string {
-    let content: string;
-
+    const case1 = AppState.getCase(state.diff, state.case_id);
+    if (case1 === undefined) {
+        return "Test case not found";
+    }
+    const input = case1.input;
+    const output = case1.output;
+    let result = "";
     switch (state.kind) {
         case "beforeExec":
-            content = TestCaseViewBeforeExec(state);
+            result = "Not yet executed";
             break;
         case "success":
-            content = TestCaseViewSuccess(state);
+            result =
+                `<div>
+                    <pre>${state.actual_output}</pre> 
+                    -> <span class="success">✅ Passed </span>
+                </div>`;
             break;
         case "fail":
-            content = TestCaseViewFail(state);
+            result =
+                `<div>
+                    <pre>${state.actual_output}</pre> 
+                    -> <span class="fail">❌ Failed </span>
+                </div>`;
             break;
     }
 
@@ -40,7 +53,7 @@ export function TestCaseViewHtml(state: TestCaseViewState): string {
                 </style>
             </head>
             <body>
-                ${content}
+                <h2>${TestCaseTitle(state.case_id)}</h2>
                 <button onclick="runTest('${state.diff}', ${state.case_id})">Run Test</button>
                 <div id="result"></div>
                 <script>
@@ -52,6 +65,13 @@ export function TestCaseViewHtml(state: TestCaseViewState): string {
                         document.getElementById("result").innerHTML = event.data.result;
                     })
                 </script>
+                
+                <h2>Input</h2>
+                    <pre>${input}</pre>
+                <h2>Output</h2>
+                    <pre>${output}</pre>
+                <h2>Your Output</h2>
+                    ${result}
             </body>
 
             </html>

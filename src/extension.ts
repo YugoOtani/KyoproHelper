@@ -40,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
 			commandId("showTestCases"),
-			getShowTestCaseHandler(workspaceRoot, context.extensionUri)
+			getShowTestCaseHandler(workspaceRoot, context)
 		)
 	);
 }
