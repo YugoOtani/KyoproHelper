@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
-const panelTitle = "Test Results";
+import { panelTitle } from "./ui";
+
 const panelId = "testResults";
 
 export class WebView {
