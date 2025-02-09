@@ -6,7 +6,7 @@ export class AppState {
     static readonly workSpaceRoot: string | undefined = getCurrentWorkspaceRoot()
 
     static getCase(diff: string, id: number): TestCase | undefined {
-        return this.problems.find(p => p.diff === diff)?.cases[id];
+        return this.problems.find(p => p.diff === diff)?.cases[id - 1];
     }
     static getDiffList(): string[] {
         return this.problems.map(p => p.diff);

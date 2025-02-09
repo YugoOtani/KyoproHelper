@@ -55,45 +55,21 @@
 
 <body>
   <h2>
-    <%= data.title %>
+    Test Case 1
   </h2>
-  <script>
-    const vscode = acquireVsCodeApi();
-
-    function runTest(diff, case_id) {
-      vscode.postMessage({
-        command: "runTest",
-        diff,
-        case_id
-      });
-    }
-    window.addEventListener("message", event => {
-      document.getElementById("result").innerHTML = event.data.result;
-    })
-  </script>
-  <button onclick=<%- JSON.stringify(`runTest('${data.diff}', ${data.case_id})`) %>>Run</button>
+  <button>Run</button>
   <div id="result"></div>
 
   <h2>Input</h2>
-  <pre><%= data.input %></pre>
+  <pre>5 3 2 4 1
+</pre>
   <h2>Output</h2>
-  <pre><%= data.output %></pre>
+  <pre>No
+</pre>
   <h2>Your Output</h2>
-  <% if (data.viewKind === "beforeExec") { %>
+
   <div>Not yet executed.</div>
-  <% } else if (data.viewKind === "success") { %>
-  <div>
-    <pre><%= data.actual_output %></pre>
-    -> <span class="success">✅ Passed </span>
-  </div>
-  <% } else if (data.viewKind === "fail") {%>
-  <div>
-    <pre><%= data.actual_output %></pre>
-    -> <span class="fail">❌ Failed </span>
-  </div>
-  <% } else { %>
-  <div> illeagal state</div>
-  <% } %>
+
 
 </body>
 

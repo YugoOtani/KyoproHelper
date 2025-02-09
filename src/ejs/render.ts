@@ -3,6 +3,7 @@ import * as ejs from "ejs";
 import { AppState } from "../data/appState";
 import { Logger } from "../debug/logger";
 import * as fs from "fs";
+import { TestCaseTitle } from "../view/ui";
 
 export type TestCaseViewKind = "beforeExec" | "success" | "fail";
 
@@ -23,36 +24,15 @@ export function renderWebView(state: TestCaseViewState, extensionUri: vscode.Uri
         return "Test case not found";
     }
     const data = {
-        title: `Test Results ${state.case_id}`,
+        title: TestCaseTitle(state.case_id),
         diff: state.diff,
         case_id: state.case_id,
         input: case1.input,
         output: case1.output,
+        actual_output: state.actual_output,
         viewKind: state.kind.toString(),
     }
     const html = ejs.render(template, { data });
-    //Logger.log(data.viewKind);
+    //Logger.longlog(html);
     return html;
-}
-function f(state: TestCaseViewState) {
-    let result = "";
-    switch (state.kind) {
-        case "beforeExec":
-            result = "Not yet executed";
-            break;
-        case "success":
-            result =
-                `<div>
-                    <pre>${state.actual_output}</pre> 
-                    -> <span class="success">✅ Passed </span>
-                </div>`;
-            break;
-        case "fail":
-            result =
-                `<div>
-                    <pre>${state.actual_output}</pre> 
-                    -> <span class="fail">❌ Failed </span>
-                </div>`;
-            break;
-    }
 }
