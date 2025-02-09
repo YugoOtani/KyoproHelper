@@ -1,15 +1,5 @@
 import { AppState } from "./appState";
-
-export type TestCaseViewKind = "beforeExec" | "success" | "fail";
-
-export class TestCaseViewState {
-    constructor(
-        public kind: TestCaseViewKind,
-        public diff: string,
-        public case_id: number,
-        public actual_output: string,
-    ) { }
-}
+import { TestCaseViewState } from "./media/render";
 
 export function TestCaseViewHtml(state: TestCaseViewState): string {
     const case1 = AppState.getCase(state.diff, state.case_id);

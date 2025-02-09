@@ -28,10 +28,31 @@ export function renderWebView(state: TestCaseViewState, extensionUri: vscode.Uri
         case_id: state.case_id,
         input: case1.input,
         output: case1.output,
+        show_res: true
     }
     const html = ejs.render(template, { data });
     //Logger.log(html);
     return html;
 }
-
-
+function f(state: TestCaseViewState) {
+    let result = "";
+    switch (state.kind) {
+        case "beforeExec":
+            result = "Not yet executed";
+            break;
+        case "success":
+            result =
+                `<div>
+                    <pre>${state.actual_output}</pre> 
+                    -> <span class="success">✅ Passed </span>
+                </div>`;
+            break;
+        case "fail":
+            result =
+                `<div>
+                    <pre>${state.actual_output}</pre> 
+                    -> <span class="fail">❌ Failed </span>
+                </div>`;
+            break;
+    }
+}

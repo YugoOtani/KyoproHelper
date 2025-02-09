@@ -1,5 +1,5 @@
 import { WebView } from "../webView";
-import { TestCaseViewState } from "../ui";
+import { TestCaseViewState } from "../media/render";
 import * as vscode from "vscode";
 import { commandId } from "./commandType";
 import { renderWebView } from "../media/render";
