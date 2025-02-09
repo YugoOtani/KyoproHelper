@@ -3,48 +3,59 @@ const panelTitle = "Test Results";
 const panelId = "testResults";
 
 export class WebView {
-    public static currentPanel: WebView | undefined;
+    static currentPanel: WebView | undefined;
+    static messageHandler: (message: any) => void;
+    static readonly viewType = panelId;
     private readonly panel: vscode.WebviewPanel;
     private disposables: vscode.Disposable[] = [];
 
-    private constructor(extensionUri: vscode.Uri) {
-        this.panel = vscode.window.createWebviewPanel(
-            panelId,
-            panelTitle,
-            vscode.ViewColumn.One,
-            { enableScripts: true }
-        );
+    static createOrShow(
+        content: string,
+        extensionUri: vscode.Uri) {
+        const column = vscode.window.activeTextEditor
+            ? vscode.window.activeTextEditor.viewColumn
+            : undefined;
 
-
-        this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
-    }
-
-    public static setMessageHandler(
-        handler: (message: any) => void,
-        extensionUri: vscode.Uri
-    ) {
-        if (!WebView.currentPanel) {
-            WebView.currentPanel = new WebView(extensionUri);
+        // If we already have a panel, show it.
+        if (WebView.currentPanel) {
+            WebView.currentPanel.panel.reveal(column);
+            return;
         }
+
+        // Otherwise, create a new panel.
+        const panel = vscode.window.createWebviewPanel(
+            this.viewType,
+            panelTitle,
+            column || vscode.ViewColumn.One,
+            getWebviewOptions(extensionUri),
+        );
+        WebView.currentPanel = new WebView(panel);
         WebView.currentPanel.panel.webview.onDidReceiveMessage(
-            handler,
+            WebView.messageHandler,
             undefined,
             WebView.currentPanel.disposables
         )
+        WebView.currentPanel.update(content);
+
     }
 
-    public static show(
-        extensionUri: vscode.Uri,
-        content: string) {
-        if (WebView.currentPanel) {
-            const p = WebView.currentPanel;
-            p.update(content);
-            WebView.currentPanel.panel.reveal();
-        } else {
-            WebView.currentPanel = new WebView(extensionUri);
-            WebView.currentPanel.update(content);
-        }
+    constructor(panel: vscode.WebviewPanel) {
+        this.panel = panel;
+        // Listen for when the panel is disposed
+        // This happens when the user closes the panel or when the panel is closed programmatically
+        this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
+
     }
+
+    static setMessageHandler(
+        handler: (message: any) => void
+    ) {
+        WebView.messageHandler = handler;
+    }
+    // send message to webview
+    /*public sendMessageToWebView() {
+        this.panel.webview.postMessage({ command: 'refactor' });
+    }*/
 
     public update(content: string) {
         this.panel.webview.html = content;
@@ -55,4 +66,16 @@ export class WebView {
         this.panel.dispose();
         this.disposables.forEach(d => d.dispose());
     }
+}
+
+// webviewの実装例
+// https://github.com/microsoft/vscode-extension-samples/blob/main/webview-sample/src/extension.ts
+// https://code.visualstudio.com/api/extension-guides/webview
+function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
+    return {
+        enableScripts: true,
+
+        // And restrict the webview to only loading content from our extension's `media` directory.
+        localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'media')]
+    };
 }

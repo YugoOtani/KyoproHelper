@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
-import * as fs from "fs";
 import * as ejs from "ejs";
-import * as path from "path";
+import { AppState } from "../appState";
+import { Logger } from "../debug/logger";
+import * as fs from "fs";
 
 export type TestCaseViewKind = "beforeExec" | "success" | "fail";
 
@@ -14,15 +15,23 @@ export class TestCaseViewState {
     ) { }
 }
 
-export function renderWebView(state: TestCaseViewState, context: vscode.ExtensionContext): string {
-    const templatePath = path.join(context.extensionPath, "src/media/index.html.ejs");
-    const cssPath = vscode.Uri.file(
-        path.join(context.extensionPath, "src/media/style.css")
-    ).with({ scheme: "vscode-resource" }); const template = fs.readFileSync(templatePath, "utf8");
-    const viewState = {
-        title: "Test Results"
+export function renderWebView(state: TestCaseViewState, extensionUri: vscode.Uri): string {
+    const templatePath = vscode.Uri.joinPath(extensionUri, 'src', 'media', 'index.html.ejs');
+    const template = fs.readFileSync(templatePath.fsPath, "utf8");
+    const case1 = AppState.getCase(state.diff, state.case_id);
+    if (case1 === undefined) {
+        return "Test case not found";
     }
-
-    return ejs.render(template, { viewState, cssUri: cssPath.toString() });
+    const data = {
+        title: `Test Results ${state.case_id}`,
+        diff: state.diff,
+        case_id: state.case_id,
+        input: case1.input,
+        output: case1.output,
+    }
+    const html = ejs.render(template, { data });
+    //Logger.log(html);
+    return html;
 }
+
 

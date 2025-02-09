@@ -2,7 +2,6 @@ import { WebView } from "../webView";
 import { TestCaseViewState } from "../ui";
 import * as vscode from "vscode";
 import { commandId } from "./commandType";
-import { runTest } from "./runTest";
 import { renderWebView } from "../media/render";
 
 const commandTitle = "Run Test";
@@ -16,26 +15,18 @@ export function getShowTestCaseCommand(diff: string, caseId: number) {
         arguments: [diff, caseId]
     };
 }
-// テストケースを表示するコマンドのハンドラを返す
-export function getShowTestCaseHandler(
-    workspaceRoot: string,
-    context: vscode.ExtensionContext) {
-    return (diff: string, caseId: number) => {
-        const state = new TestCaseViewState(
-            "beforeExec",
-            diff,
-            caseId,
-            ""
-        )
-        WebView.setMessageHandler((message) => {
-            if (message.command === "runTest") {
-                const diff = message.diff;
-                const caseId = message.case_id;
-                runTest(diff, caseId, workspaceRoot, context.extensionUri);
-            }
-        }, context.extensionUri)
-        WebView.show(context.extensionUri, renderWebView(state, context));
-    };
+export function showTestCaseHandler(
+    diff: string,
+    caseId: number,
+    extensionUri: vscode.Uri) {
+    const state = new TestCaseViewState(
+        "beforeExec",
+        diff,
+        caseId,
+        ""
+    )
+    WebView.createOrShow(renderWebView(state, extensionUri), extensionUri);
+
 }
 
 

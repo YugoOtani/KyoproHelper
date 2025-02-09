@@ -3,6 +3,7 @@ import * as fs from "fs";
 
 export class AppState {
     private static problems: Problem[] = [];
+    static readonly workSpaceRoot: string | undefined = getCurrentWorkspaceRoot()
 
     static getCase(diff: string, id: number): TestCase | undefined {
         return this.problems.find(p => p.diff === diff)?.cases[id];
@@ -43,5 +44,18 @@ export function loadTestCases(filePath: string): Problem[] {
     } else {
         vscode.window.showErrorMessage(`File not found: ${filePath}`);
         return [];
+    }
+}
+
+export function getCurrentWorkspaceRoot(): string | undefined {
+    const folders = vscode.workspace.workspaceFolders;
+    if (folders === undefined) {
+        vscode.window.showErrorMessage("No workspace is opened.");
+        return undefined;
+    } else if (folders.length === 1) {
+        return folders[0].uri.fsPath;
+    } else {
+        vscode.window.showErrorMessage("Multi-root workspace is not supported.");
+        return undefined;
     }
 }
