@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as ejs from "ejs";
-import { AppState } from "../appState";
+import { AppState } from "../data/appState";
 import { Logger } from "../debug/logger";
 import * as fs from "fs";
 

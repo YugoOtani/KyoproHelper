@@ -1,8 +1,8 @@
 import * as child_process from "child_process";
-import { WebView } from "../webView";
+import { testResultProvider } from "../view/testResultProvider";
 import { TestCaseViewState } from "../media/render";
 import * as vscode from "vscode";
-import { AppState } from "../appState";
+import { AppState } from "../data/appState";
 import { Logger } from "../debug/logger";
 import { renderWebView } from "../media/render";
 
@@ -45,6 +45,6 @@ function runTest(diff: string, caseId: number, workspaceRoot: string, extensionU
         output
     )
     const html = renderWebView(state, extensionUri)
-    WebView.createOrShow(html, extensionUri);
+    testResultProvider.createOrShow(html, extensionUri);
 }
 

@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 import { Logger } from './debug/logger';
-import { TestCasesProvider } from './testCasesProvider';
+import { TestCasesProvider } from './view/testCasesProvider';
 import { commandId } from './command/commandType';
 import { getShowTestCaseCommand, showTestCaseHandler } from './command/showTest';
-import { AppState } from './appState';
+import { AppState } from './data/appState';
 import * as path from 'path';
-import { WebView } from './webView';
+import { testResultProvider } from './view/testResultProvider';
 import assert from 'assert';
 import { messageHandlerForRunTest } from './command/runTest';
 
@@ -35,7 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// WebViewの作成
 	// runTestコマンドの登録
-	WebView.setMessageHandler((message) => {
+	testResultProvider.setMessageHandler((message) => {
 		messageHandlerForRunTest(message, context.extensionUri);
 	});
 	// showTestコマンドの登録

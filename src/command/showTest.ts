@@ -1,4 +1,4 @@
-import { WebView } from "../webView";
+import { testResultProvider } from "../view/testResultProvider";
 import { TestCaseViewState } from "../media/render";
 import * as vscode from "vscode";
 import { commandId } from "./commandType";
@@ -25,7 +25,7 @@ export function showTestCaseHandler(
         caseId,
         ""
     )
-    WebView.createOrShow(renderWebView(state, extensionUri), extensionUri);
+    testResultProvider.createOrShow(renderWebView(state, extensionUri), extensionUri);
 
 }
 

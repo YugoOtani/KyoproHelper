@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { ProblemTitle, TestCaseTitle } from "./ui";
-import { AppState } from "./appState";
+import { AppState } from "../data/appState";
 
 // サイドバーに表示する問題とテストケースの構造を定義
 export class TestCasesProvider implements vscode.TreeDataProvider<TestCaseTreeItem> {

@@ -3,8 +3,8 @@ import { panelTitle } from "./ui";
 
 const panelId = "testResults";
 
-export class WebView {
-    static currentPanel: WebView | undefined;
+export class testResultProvider {
+    static currentPanel: testResultProvider | undefined;
     static messageHandler: (message: any) => void;
     static readonly viewType = panelId;
     private readonly panel: vscode.WebviewPanel;
@@ -18,8 +18,8 @@ export class WebView {
             : undefined;
 
         // If we already have a panel, show it.
-        if (WebView.currentPanel) {
-            WebView.currentPanel.panel.reveal(column);
+        if (testResultProvider.currentPanel) {
+            testResultProvider.currentPanel.panel.reveal(column);
             return;
         }
 
@@ -30,13 +30,13 @@ export class WebView {
             column || vscode.ViewColumn.One,
             getWebviewOptions(extensionUri),
         );
-        WebView.currentPanel = new WebView(panel);
-        WebView.currentPanel.panel.webview.onDidReceiveMessage(
-            WebView.messageHandler,
+        testResultProvider.currentPanel = new testResultProvider(panel);
+        testResultProvider.currentPanel.panel.webview.onDidReceiveMessage(
+            testResultProvider.messageHandler,
             undefined,
-            WebView.currentPanel.disposables
+            testResultProvider.currentPanel.disposables
         )
-        WebView.currentPanel.update(content);
+        testResultProvider.currentPanel.update(content);
 
     }
 
@@ -51,7 +51,7 @@ export class WebView {
     static setMessageHandler(
         handler: (message: any) => void
     ) {
-        WebView.messageHandler = handler;
+        testResultProvider.messageHandler = handler;
     }
     // send message to webview
     /*public sendMessageToWebView() {
@@ -63,7 +63,7 @@ export class WebView {
     }
 
     public dispose() {
-        WebView.currentPanel = undefined;
+        testResultProvider.currentPanel = undefined;
         this.panel.dispose();
         this.disposables.forEach(d => d.dispose());
     }
