@@ -1,8 +1,8 @@
 import { testResultProvider } from "../view/testResultProvider";
-import { TestCaseViewState } from "../media/render";
+import { TestCaseViewState } from "../ejs/render";
 import * as vscode from "vscode";
 import { commandId } from "./commandType";
-import { renderWebView } from "../media/render";
+import { renderWebView } from "../ejs/render";
 
 const commandTitle = "Run Test";
 

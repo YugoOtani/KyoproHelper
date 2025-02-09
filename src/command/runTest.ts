@@ -1,10 +1,10 @@
 import * as child_process from "child_process";
 import { testResultProvider } from "../view/testResultProvider";
-import { TestCaseViewState } from "../media/render";
+import { TestCaseViewState } from "../ejs/render";
 import * as vscode from "vscode";
 import { AppState } from "../data/appState";
 import { Logger } from "../debug/logger";
-import { renderWebView } from "../media/render";
+import { renderWebView } from "../ejs/render";
 
 export function messageHandlerForRunTest(
     message: any,

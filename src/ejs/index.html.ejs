@@ -75,6 +75,11 @@
     <h2>Output</h2>
     <pre><%= data.output %></pre>
     <h2>Your Output</h2>
+    <% if (data.show_res) { %>
+        <h1>これは見出しです</h1>
+        <% } else { %>
+            <p>これは段落です</p>
+            <% } %>
 
 </body>
 
