@@ -19,6 +19,7 @@ export class testResultProvider {
 
         // If we already have a panel, show it.
         if (testResultProvider.currentPanel) {
+            testResultProvider.currentPanel.update(content);
             testResultProvider.currentPanel.panel.reveal(column);
             return;
         }

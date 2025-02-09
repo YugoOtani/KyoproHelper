@@ -28,10 +28,10 @@ export function renderWebView(state: TestCaseViewState, extensionUri: vscode.Uri
         case_id: state.case_id,
         input: case1.input,
         output: case1.output,
-        show_res: true
+        viewKind: state.kind.toString(),
     }
     const html = ejs.render(template, { data });
-    //Logger.log(html);
+    //Logger.log(data.viewKind);
     return html;
 }
 function f(state: TestCaseViewState) {

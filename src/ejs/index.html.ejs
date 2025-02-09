@@ -2,84 +2,92 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Results</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Results</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
 
-        h1 {
-            color: #333;
-        }
+    h1 {
+      color: #333;
+    }
 
-        .test-case {
-            background: white;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
+    .test-case {
+      background: white;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
 
-        button {
-            background-color: #007acc;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+    button {
+      background-color: #007acc;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
 
-        button:hover {
-            background-color: #005fa3;
-        }
+    button:hover {
+      background-color: #005fa3;
+    }
 
-        body {
-            font-family: sans-serif;
-            padding: 20px;
-        }
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
 
-        .success {
-            color: green;
-        }
+    .success {
+      color: green;
+    }
 
-        .fail {
-            color: red;
-        }
-    </style>
+    .fail {
+      color: red;
+    }
+  </style>
 
 </head>
 
 <body>
-    <h2>
-        <%= data.title %>
-    </h2>
-    <script>
-        const vscode = acquireVsCodeApi();
-        function runTest(diff, case_id) {
-            console.log(diff);
-            vscode.postMessage({ command: "runTest", diff, case_id });
-        }
-        window.addEventListener("message", event => {
-            document.getElementById("result").innerHTML = event.data.result;
-        })
-    </script>
-    <button onclick=<%- JSON.stringify(`runTest('${data.diff}', ${data.case_id})`) %>>Run Test</button>
-    <div id="result"></div>
+  <h2>
+    <%= data.title %>
+  </h2>
+  <script>
+    const vscode = acquireVsCodeApi();
 
-    <h2>Input</h2>
-    <pre><%= data.input %></pre>
-    <h2>Output</h2>
-    <pre><%= data.output %></pre>
-    <h2>Your Output</h2>
-    <% if (data.show_res) { %>
-        <h1>これは見出しです</h1>
-        <% } else { %>
-            <p>これは段落です</p>
-            <% } %>
+    function runTest(diff, case_id) {
+      vscode.postMessage({
+        command: "runTest",
+        diff,
+        case_id
+      });
+    }
+    window.addEventListener("message", event => {
+      document.getElementById("result").innerHTML = event.data.result;
+    })
+  </script>
+  <button onclick=<%- JSON.stringify(`runTest('${data.diff}', ${data.case_id})`) %>>Run Test</button>
+  <div id="result"></div>
+
+  <h2>Input</h2>
+  <pre><%= data.input %></pre>
+  <h2>Output</h2>
+  <pre><%= data.output %></pre>
+  <h2>Your Output</h2>
+  <% if (data.viewKind === "beforeExec") { %>
+  <div>Not yet executed.</div>
+  <% } else if (data.viewKind === "success") { %>
+  <div>success</div>
+  <% } else if (data.viewKind === "fail") {%>
+  <div> fail </div>
+  <% } else { %>
+  <div> illeagal state</div>
+  <% } %>
 
 </body>
 
