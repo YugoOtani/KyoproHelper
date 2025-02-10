@@ -1,10 +1,10 @@
-import { testResultProvider } from "../view/testResultProvider";
+import { WebView } from "../view/webView";
 import { TestCaseViewState } from "../ejs/render";
 import * as vscode from "vscode";
 import { commandId } from "./commandType";
 import { renderWebView } from "../ejs/render";
 
-const commandTitle = "Run Test";
+const commandTitle = "Show Test";
 
 // TestCaseを受け取って表示するコマンドを返す
 // treeViewに渡すコールバックのようなもの
@@ -25,7 +25,7 @@ export function showTestCaseHandler(
         caseId,
         ""
     )
-    testResultProvider.createOrShow(renderWebView(state, extensionUri), extensionUri);
+    WebView.createOrShow(state, renderWebView(state, extensionUri), extensionUri);
 
 }
 

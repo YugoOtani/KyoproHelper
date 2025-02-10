@@ -1,16 +1,23 @@
 import * as vscode from "vscode";
 import { panelTitle } from "./ui";
+import { TestCaseViewState } from "../ejs/render";
 
 const panelId = "testResults";
 
-export class testResultProvider {
-    static currentPanel: testResultProvider | undefined;
-    static messageHandler: (message: any) => void;
+export class WebView {
+    static currentPanel: WebView | undefined;
+    // static messageHandler: (message: any) => void;
     static readonly viewType = panelId;
     private readonly panel: vscode.WebviewPanel;
+    private currentViewState: TestCaseViewState
     private disposables: vscode.Disposable[] = [];
 
+    viewState() {
+        return this.currentViewState;
+    }
+
     static createOrShow(
+        viewState: TestCaseViewState,
         content: string,
         extensionUri: vscode.Uri) {
         const column = vscode.window.activeTextEditor
@@ -18,9 +25,9 @@ export class testResultProvider {
             : undefined;
 
         // If we already have a panel, show it.
-        if (testResultProvider.currentPanel) {
-            testResultProvider.currentPanel.update(content);
-            testResultProvider.currentPanel.panel.reveal(column);
+        if (WebView.currentPanel) {
+            WebView.currentPanel.update(viewState, content);
+            WebView.currentPanel.panel.reveal(column);
             return;
         }
 
@@ -31,40 +38,42 @@ export class testResultProvider {
             column || vscode.ViewColumn.One,
             getWebviewOptions(extensionUri),
         );
-        testResultProvider.currentPanel = new testResultProvider(panel);
-        testResultProvider.currentPanel.panel.webview.onDidReceiveMessage(
-            testResultProvider.messageHandler,
+        WebView.currentPanel = new WebView(panel, viewState);
+        /* WebView.currentPanel.panel.webview.onDidReceiveMessage(
+            WebView.messageHandler,
             undefined,
-            testResultProvider.currentPanel.disposables
-        )
-        testResultProvider.currentPanel.update(content);
+            WebView.currentPanel.disposables
+        )*/
+        WebView.currentPanel.update(viewState, content);
 
     }
 
-    constructor(panel: vscode.WebviewPanel) {
+    constructor(panel: vscode.WebviewPanel, viewState: TestCaseViewState) {
         this.panel = panel;
+        this.currentViewState = viewState;
         // Listen for when the panel is disposed
         // This happens when the user closes the panel or when the panel is closed programmatically
         this.panel.onDidDispose(() => this.dispose(), null, this.disposables);
 
     }
 
-    static setMessageHandler(
+    /*static setMessageHandler(
         handler: (message: any) => void
     ) {
-        testResultProvider.messageHandler = handler;
-    }
+        WebView.messageHandler = handler;
+    }*/
     // send message to webview
     /*public sendMessageToWebView() {
         this.panel.webview.postMessage({ command: 'refactor' });
     }*/
 
-    public update(content: string) {
+    public update(state: TestCaseViewState, content: string) {
+        this.currentViewState = state;
         this.panel.webview.html = content;
     }
 
     public dispose() {
-        testResultProvider.currentPanel = undefined;
+        WebView.currentPanel = undefined;
         this.panel.dispose();
         this.disposables.forEach(d => d.dispose());
     }

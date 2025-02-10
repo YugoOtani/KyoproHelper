@@ -1,12 +1,14 @@
 import * as child_process from "child_process";
-import { testResultProvider } from "../view/testResultProvider";
+import { WebView } from "../view/webView";
 import { TestCaseViewState } from "../ejs/render";
 import * as vscode from "vscode";
 import { AppState } from "../data/appState";
 import { Logger } from "../debug/logger";
 import { renderWebView } from "../ejs/render";
+import { commandId } from "./commandType";
 
-export function messageHandlerForRunTest(
+
+/*export function messageHandlerForRunTest(
     message: any,
     uri: vscode.Uri) {
     if (message.command === "runTest") {
@@ -18,9 +20,14 @@ export function messageHandlerForRunTest(
         }
         runTest(diff, caseId, workspaceRoot, uri);
     }
-}
+}*/
 
-function runTest(diff: string, caseId: number, workspaceRoot: string, extensionUri: vscode.Uri) {
+// run test case and show result
+export function runTest(
+    diff: string,
+    caseId: number,
+    workspaceRoot: string,
+    extensionUri: vscode.Uri) {
     const testCase = AppState.getCase(diff, caseId);
     if (testCase === undefined) {
         vscode.window.showErrorMessage("Test case not found");
@@ -45,6 +52,6 @@ function runTest(diff: string, caseId: number, workspaceRoot: string, extensionU
         output
     )
     const html = renderWebView(state, extensionUri)
-    testResultProvider.createOrShow(html, extensionUri);
+    WebView.createOrShow(state, html, extensionUri);
 }
 

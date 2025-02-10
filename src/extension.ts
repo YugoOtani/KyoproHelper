@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
 import { Logger } from './debug/logger';
-import { TestCasesProvider } from './view/testCasesProvider';
+import { TestCasesProvider } from './view/treeView';
 import { commandId } from './command/commandType';
 import { getShowTestCaseCommand, showTestCaseHandler } from './command/showTest';
 import { AppState } from './data/appState';
 import * as path from 'path';
-import { testResultProvider } from './view/testResultProvider';
+import { WebView } from './view/webView';
 import assert from 'assert';
-import { messageHandlerForRunTest } from './command/runTest';
+import { runTest } from './command/runTest';
 
 // defined in package.json
 export const treeViewId = "testCasesView";
@@ -35,9 +35,20 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// WebViewの作成
 	// runTestコマンドの登録
-	testResultProvider.setMessageHandler((message) => {
-		messageHandlerForRunTest(message, context.extensionUri);
-	});
+	context.subscriptions.push(
+		vscode.commands.registerCommand(
+			commandId("runTestCase"),
+			() => {
+				// テストケースのWebViewが開かれているか確認
+				const state = WebView.currentPanel?.viewState();
+				if (state === undefined) {
+					vscode.window.showErrorMessage("Open test case view first");
+					return;
+				}
+				runTest(state.diff, state.case_id, workspaceRoot, context.extensionUri);
+			}
+		)
+	);
 	// showTestコマンドの登録
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
@@ -45,13 +56,14 @@ export function activate(context: vscode.ExtensionContext) {
 			(diff, id) => showTestCaseHandler(diff, id, context.extensionUri)
 		)
 	);
-	const runButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+	// stateus barにもrunボタンを登録
+	/*const runButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
 	runButton.text = "$(play) Run";
 	runButton.command = "extension.runAllTests";
 	//runButton.hide();
 	runButton.show();
 
-	context.subscriptions.push(runButton);
+	context.subscriptions.push(runButton);*/
 }
 
 export function deactivate() { }

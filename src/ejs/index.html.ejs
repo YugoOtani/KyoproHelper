@@ -69,26 +69,7 @@
 
 <body>
 
-  <script>
-    const vscode = acquireVsCodeApi();
-
-    function runTest(diff, case_id) {
-      vscode.postMessage({
-        command: "runTest",
-        diff,
-        case_id
-      });
-    }
-    window.addEventListener("message", event => {
-      document.getElementById("result").innerHTML = event.data.result;
-    })
-  </script>
-
   <div class="title"><strong><%= data.title %></strong></div>
-  <button onclick=<%- JSON.stringify(`runTest('${data.diff}', ${data.case_id})`) %>>
-    Run
-  </button>
-
   <div id="result"></div>
 
   <strong>Input</strong>
