@@ -6,6 +6,7 @@ import { AppState } from "../data/appState";
 import { Logger } from "../debug/logger";
 import { renderWebView } from "../ejs/render";
 import { commandId } from "./commandType";
+import { ExtensionSettings } from "../extensionSettings";
 
 
 /*export function messageHandlerForRunTest(
@@ -33,7 +34,14 @@ export function runTest(
         vscode.window.showErrorMessage("Test case not found");
         return;
     }
-    const process = child_process.spawnSync("cargo", ["run"], {
+    const command: string | undefined = ExtensionSettings.getCommand();
+    const args: string[] | undefined = ExtensionSettings.getArgs();
+    if (command === undefined || args === undefined) {
+        vscode.window.showErrorMessage(`command: ${command}, args: ${args}`);
+        vscode.window.showErrorMessage("Set the command and args in the extension configuration");
+        return;
+    }
+    const process = child_process.spawnSync(command, args, {
         cwd: workspaceRoot,
         input: testCase.input,
         encoding: "utf-8",

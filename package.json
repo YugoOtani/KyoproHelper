@@ -38,6 +38,23 @@
           "name": "Test Cases"
         }
       ]
+    },
+    "configuration": {
+      "title": "Kyopro Helper",
+      "properties": {
+        "kyopro.command": {
+          "type": "string",
+          "default": "echo",
+          "description": "Specifies the command when button is pressed"
+        },
+        "kyopro.args": {
+          "type": "array",
+          "default": [
+            "Hello, World!"
+          ],
+          "description": "Specifies the arguments when button is pressed"
+        }
+      }
     }
   },
   "scripts": {
