@@ -51,7 +51,10 @@ export function runTest(
         vscode.window.showErrorMessage(`Execution failed: ${process.error.message}`);
         return;
     }
-    const output = process.stdout.trim();
+    let output = process.stdout.trim();
+    if (output === "") {
+        output = process.stderr.trim();
+    }
     const expected = testCase.output.trim();
     const state = new TestCaseViewState(
         (output === expected) ? "success" : "fail",
