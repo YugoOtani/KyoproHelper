@@ -3,27 +3,28 @@ import { TestCaseViewState } from "../view/viewState";
 import * as vscode from "vscode";
 import { commandId } from "./commandType";
 import { renderWebView } from "../view/render";
+import { AppState } from "../data/appState";
 
 const commandTitle = "Show Test";
 
-// TestCaseを受け取って表示するコマンドを返す
-// treeViewに渡すコールバックのようなもの
-export function getShowTestCaseCommand(diff: string, caseId: number) {
+export function getShowAllTestsCommand(diff: string) {
     return {
-        command: commandId("showTestCase"),
+        command: commandId("showAllTestCases"),
         title: commandTitle,
-        arguments: [diff, caseId]
+        arguments: [diff]
     };
 }
-export function showTestCaseHandler(
+export function showAllTestsHandler(
     diff: string,
-    caseId: number,
+    workspaceRoot: string,
     extensionUri: vscode.Uri) {
+    const cases = AppState.getCaseList(diff).map((c) => { return { id: c, res: false } })
+
     const state = new TestCaseViewState(
-        "beforeExec",
-        [],
+        "beforeExecAll",
+        cases,
         diff,
-        caseId,
+        0,
         ""
     )
     WebView.createOrShow(state, renderWebView(state, extensionUri), extensionUri);

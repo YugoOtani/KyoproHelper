@@ -1,6 +1,6 @@
 import * as child_process from "child_process";
 import { WebView } from "../view/webView";
-import { TestCaseViewState } from "../view/render";
+import { TestCaseViewState } from "../view/viewState";
 import * as vscode from "vscode";
 import { AppState } from "../data/appState";
 import { Logger } from "../debug/logger";

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { panelTitle } from "./ui";
-import { TestCaseViewState } from "./render";
+import { TestCaseViewState } from "./viewState";
 
 const panelId = "testResults";
 

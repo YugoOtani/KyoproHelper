@@ -1,13 +1,15 @@
 export type Command =
-    "showTestCases"
+    "showTestCase"
     | "runTestCase"
+    | "showAllTestCases"
     | "runAllTestCases";
 
 // package.jsonのcontributes.commandsのidと同じ
 export function commandId(command: Command) {
     switch (command) {
-        case "showTestCases": return "testCasesView.openTestCases";
+        case "showTestCase": return "testCasesView.openTestCases";
         case "runTestCase": return "testCasesView.runTest";
         case "runAllTestCases": return "testCasesView.runAllTests";
+        case "showAllTestCases": return "testCasesView.openAllTestCases";
     }
 }

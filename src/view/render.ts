@@ -5,18 +5,9 @@ import { Logger } from "../debug/logger";
 import * as fs from "fs";
 import { runAllTitle, testCaseTitle } from "./ui";
 import { title } from "process";
+import { TestCaseViewState } from "./viewState";
 
-export type TestCaseViewKind = "beforeExec" | "success" | "fail" | "runAll";
 
-export class TestCaseViewState {
-    constructor(
-        public kind: TestCaseViewKind,
-        public isSuccess: { id: number, res: boolean }[],// only used for runAll
-        public diff: string,
-        public case_id: number,
-        public actual_output: string,
-    ) { }
-}
 function renderTestCaseView(state: TestCaseViewState, extensionUri: vscode.Uri): string {
     const templatePath = vscode.Uri.joinPath(extensionUri, 'template', 'case1.html.ejs');
     const template = fs.readFileSync(templatePath.fsPath, "utf8");
@@ -36,12 +27,13 @@ function renderTestCaseView(state: TestCaseViewState, extensionUri: vscode.Uri):
     const html = ejs.render(template, { data });
     return html;
 }
-function renderRunAllTestsView(state: TestCaseViewState, extensionUri: vscode.Uri): string {
+function renderAllTestsView(state: TestCaseViewState, extensionUri: vscode.Uri): string {
     const templatePath = vscode.Uri.joinPath(extensionUri, 'template', 'all.html.ejs');
     const template = fs.readFileSync(templatePath.fsPath, "utf8");
     const res = state.isSuccess
     const data = {
         title: runAllTitle,
+        showResult: state.kind === "runAll",
         results: res,
     }
     const html = ejs.render(template, { data });
@@ -49,10 +41,14 @@ function renderRunAllTestsView(state: TestCaseViewState, extensionUri: vscode.Ur
 }
 
 export function renderWebView(state: TestCaseViewState, extensionUri: vscode.Uri): string {
-    if (state.kind === "runAll") {
-        return renderRunAllTestsView(state, extensionUri);
-    } else {
-        return renderTestCaseView(state, extensionUri);
+    switch (state.kind) {
+        case "beforeExec":
+        case "fail":
+        case "success":
+            return renderTestCaseView(state, extensionUri);
+        case "beforeExecAll":
+        case "runAll":
+            return renderAllTestsView(state, extensionUri);
     }
 }
 

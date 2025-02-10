@@ -3,7 +3,8 @@ import { commandId } from "./commandType";
 import { AppState } from "../data/appState";
 import { ExtensionSettings } from "../extensionSettings";
 import * as child_process from "child_process";
-import { renderWebView, TestCaseViewState } from "../view/render";
+import { renderWebView } from "../view/render";
+import { TestCaseViewState } from "../view/viewState";
 import { WebView } from "../view/webView";
 
 export function getRunAllTestsCommand(diff: string): vscode.Command {

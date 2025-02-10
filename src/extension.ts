@@ -10,6 +10,7 @@ import { WebView } from './view/webView';
 import assert from 'assert';
 import { runTest } from './command/runTest';
 import { getRunAllTestsCommand, runAllTests } from './command/runAllTests';
+import { getShowAllTestsCommand, showAllTestsHandler } from './command/showAllTests';
 
 // defined in package.json
 export const treeViewId = "testCasesView";
@@ -36,13 +37,14 @@ export function activate(context: vscode.ExtensionContext) {
 	AppState.loadState(problemsDirPath)
 
 	// TreeView(サイドバーの部分)の登録
-	const onAllTestsClicked = getRunAllTestsCommand
+	const onAllTestsClicked = getShowAllTestsCommand
 	const onTestCaseClicked = getShowTestCaseCommand
 	const treeViewProvider = new TestCasesProvider(onAllTestsClicked, onTestCaseClicked)
 	vscode.window.registerTreeDataProvider(treeViewId, treeViewProvider);
 
 	// WebViewの作成
 	// runTestコマンドの登録
+	// -> 開いているWebViewに応じて異なるコマンドを実行
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
 			commandId("runTestCase"),
@@ -53,10 +55,19 @@ export function activate(context: vscode.ExtensionContext) {
 					vscode.window.showErrorMessage("Open test case view first");
 					return;
 				}
-				if (state.kind === "runAll") {
-					runAllTests(state.diff, workspaceRoot, context.extensionUri);
-				} else {
-					runTest(state.diff, state.case_id, workspaceRoot, context.extensionUri);
+				switch (state.kind) {
+					case "beforeExec":
+					case "fail":
+					case "success":
+						runTest(state.diff, state.case_id, workspaceRoot, context.extensionUri);
+						break;
+					case "beforeExecAll":
+					case "runAll":
+						runAllTests(state.diff, workspaceRoot, context.extensionUri);
+						break;
+					default:
+						assert.fail("Invalid state");
+
 				}
 
 			}
@@ -65,7 +76,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// showTestコマンドの登録
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			commandId("showTestCases"),
+			commandId("showTestCase"),
 			(diff, id) => showTestCaseHandler(diff, id, context.extensionUri)
 		)
 	);
@@ -80,9 +91,9 @@ export function activate(context: vscode.ExtensionContext) {
 	// runAllTestsコマンドの登録
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			commandId("runAllTestCases"),
+			commandId("showAllTestCases"),
 			(diff) => {
-				runAllTests(diff, workspaceRoot, context.extensionUri);
+				showAllTestsHandler(diff, workspaceRoot, context.extensionUri);
 			}
 		)
 	);

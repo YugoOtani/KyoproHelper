@@ -59,10 +59,12 @@
   <% for (let i = 0; i < l; i++) { %>
   <div class="test-case">
     case <%= data.results[i].id %>
+    <% if (data.showResult) { %>
     <% if (data.results[i].res) { %>
     <span class="success">✅ Passed </span>
     <% } else { %>
     <span class="fail">❌ Failed </span>
+    <% } %>
     <% } %>
   </div>
   <% } %>

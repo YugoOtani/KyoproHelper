@@ -33,6 +33,10 @@
       {
         "command": "testCasesView.runAllTests",
         "title": "Run All Tests"
+      },
+      {
+        "command": "testCasesView.openAllTestCases",
+        "title": "Show All Tests"
       }
     ],
     "views": {
