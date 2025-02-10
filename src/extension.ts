@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 import { Logger } from './debug/logger';
 import { TestCasesProvider } from './view/treeView';
 import { commandId } from './command/commandType';
@@ -22,11 +23,16 @@ export function activate(context: vscode.ExtensionContext) {
 	if (workspaceRoot === undefined) {
 		return;
 	}
+	const problemsDirPath = path.join(workspaceRoot, problemsPath)
+	if (!fs.existsSync(problemsDirPath)) {
+		vscode.window.showErrorMessage("No contest.json found in the workspace root");
+		return;
+	}
 	// Loggerの有効化
 	Logger.activate(context);
 
 	// 問題の読み込み
-	AppState.loadState(path.join(workspaceRoot, problemsPath))
+	AppState.loadState(problemsDirPath)
 
 	// TreeView(サイドバーの部分)の登録
 	const onTestCaseClicked = getShowTestCaseCommand
@@ -62,7 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
 	runButton.command = "extension.runAllTests";
 	//runButton.hide();
 	runButton.show();
-
+	
 	context.subscriptions.push(runButton);*/
 }
 

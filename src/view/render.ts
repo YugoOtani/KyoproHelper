@@ -17,7 +17,7 @@ export class TestCaseViewState {
 }
 
 export function renderWebView(state: TestCaseViewState, extensionUri: vscode.Uri): string {
-    const templatePath = vscode.Uri.joinPath(extensionUri, 'src', 'ejs', 'index.html.ejs');
+    const templatePath = vscode.Uri.joinPath(extensionUri, 'template', 'index.html.ejs');
     const template = fs.readFileSync(templatePath.fsPath, "utf8");
     const case1 = AppState.getCase(state.diff, state.case_id);
     if (case1 === undefined) {
