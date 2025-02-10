@@ -45,6 +45,13 @@ export function activate(context: vscode.ExtensionContext) {
 			(diff, id) => showTestCaseHandler(diff, id, context.extensionUri)
 		)
 	);
+	const runButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+	runButton.text = "$(play) Run";
+	runButton.command = "extension.runAllTests";
+	//runButton.hide();
+	runButton.show();
+
+	context.subscriptions.push(runButton);
 }
 
 export function deactivate() { }

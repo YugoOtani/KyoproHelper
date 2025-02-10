@@ -28,13 +28,20 @@
       background-color: #007acc;
       color: white;
       border: none;
-      padding: 8px 12px;
       border-radius: 4px;
       cursor: pointer;
+      width: 50px;
+      padding: 3px;
+      box-sizing: border-box;
     }
 
     button:hover {
       background-color: #005fa3;
+    }
+
+    strong {
+      font-weight: bold;
+      font-size: 1.2em;
     }
 
     pre {
@@ -50,32 +57,37 @@
 
     .success {
       color: green;
+      font-size: 0.8em;
     }
 
     .fail {
       color: red;
+      font-size: 0.8em;
+    }
+
+    .title {
+      font-size: 1.5em;
+      font-weight: bold;
     }
   </style>
 
 </head>
 
 <body>
-  <h2>
-    Test Case 1
-    <button>Run</button>
-  </h2>
+
+  <span class="title">Test Results</span>
+  <button>Run</button>
+
 
   <div id="result"></div>
 
-  <h3>Input</h3>
+  <p><strong>Input</strong></p>
   <pre>5 3 2 4 1
 </pre>
-  <h3>Output</h3>
+  <p><strong>Output</strong></p>
   <pre>No
 </pre>
-  <h3>Your Output</h3>
-
-  <div>Not yet executed.</div>
+  <p><strong>Result</strong> <span class="fail">❌ Failed </span></p>
 
 
 </body>

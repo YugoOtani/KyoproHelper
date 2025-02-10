@@ -5,7 +5,7 @@
 ## 機能
 - テストケースを`contest.json`から読んでVSCodeのTreeViewとWebViewに表示する
     * `contest.json`のサンプルはsampleディレクトリ
-    * AtCoderのテストケースの取得は他のリポジトリで実装済み
+    * AtCoderのテストケースの取得は他のリポジトリで実装済み > https://github.com/YugoOtani/cargo-atcin
 - WebViewのRunボタンを押すと事前に設定したコマンドを実行し、出力を表示する
 
 ## 実行方法

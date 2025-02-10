@@ -31,6 +31,7 @@
       padding: 8px 12px;
       border-radius: 4px;
       cursor: pointer;
+
     }
 
     button:hover {
@@ -42,21 +43,32 @@
       padding: 20px;
     }
 
+    pre {
+      white-space: pre-wrap;
+      background-color: rgb(221, 221, 221);
+      padding: 6px;
+    }
+
+    strong {
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
     .success {
       color: green;
+      font-size: 0.8em;
     }
 
     .fail {
       color: red;
+      font-size: 0.8em;
     }
   </style>
 
 </head>
 
 <body>
-  <h2>
-    <%= data.title %>
-  </h2>
+
   <script>
     const vscode = acquireVsCodeApi();
 
@@ -71,25 +83,31 @@
       document.getElementById("result").innerHTML = event.data.result;
     })
   </script>
-  <button onclick=<%- JSON.stringify(`runTest('${data.diff}', ${data.case_id})`) %>>Run</button>
+
+  <div class="title"><strong><%= data.title %></strong></div>
+  <button onclick=<%- JSON.stringify(`runTest('${data.diff}', ${data.case_id})`) %>>
+    Run
+  </button>
+
   <div id="result"></div>
 
-  <h3>Input</h3>
+  <strong>Input</strong>
   <pre><%= data.input %></pre>
-  <h3>Output</h3>
+  <strong>Output</strong>
   <pre><%= data.output %></pre>
-  <h3>Your Output</h3>
   <% if (data.viewKind === "beforeExec") { %>
-  <div>Not yet executed.</div>
+  <strong>Your Output</strong>
   <% } else if (data.viewKind === "success") { %>
+  <strong>Your Output</strong>
+  <span class="success">✅ Passed </span>
   <div>
     <pre><%= data.actual_output %></pre>
-    -> <span class="success">✅ Passed </span>
   </div>
   <% } else if (data.viewKind === "fail") {%>
+  <strong>Your Output</strong>
+  <span class="fail">❌ Failed </span>
   <div>
     <pre><%= data.actual_output %></pre>
-    -> <span class="fail">❌ Failed </span>
   </div>
   <% } else { %>
   <div> illeagal state</div>
