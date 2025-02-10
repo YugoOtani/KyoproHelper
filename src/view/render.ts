@@ -3,7 +3,7 @@ import * as ejs from "ejs";
 import { AppState } from "../data/appState";
 import { Logger } from "../debug/logger";
 import * as fs from "fs";
-import { TestCaseTitle } from "../view/ui";
+import { TestCaseTitle } from "./ui";
 
 export type TestCaseViewKind = "beforeExec" | "success" | "fail";
 

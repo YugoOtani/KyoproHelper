@@ -1,10 +1,10 @@
 import * as child_process from "child_process";
 import { WebView } from "../view/webView";
-import { TestCaseViewState } from "../ejs/render";
+import { TestCaseViewState } from "../view/render";
 import * as vscode from "vscode";
 import { AppState } from "../data/appState";
 import { Logger } from "../debug/logger";
-import { renderWebView } from "../ejs/render";
+import { renderWebView } from "../view/render";
 import { commandId } from "./commandType";
 import { ExtensionSettings } from "../extensionSettings";
 

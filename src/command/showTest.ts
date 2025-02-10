@@ -1,8 +1,8 @@
 import { WebView } from "../view/webView";
-import { TestCaseViewState } from "../ejs/render";
+import { TestCaseViewState } from "../view/render";
 import * as vscode from "vscode";
 import { commandId } from "./commandType";
-import { renderWebView } from "../ejs/render";
+import { renderWebView } from "../view/render";
 
 const commandTitle = "Show Test";
 
