@@ -74,11 +74,11 @@
   <button onclick=<%- JSON.stringify(`runTest('${data.diff}', ${data.case_id})`) %>>Run</button>
   <div id="result"></div>
 
-  <h2>Input</h2>
+  <h3>Input</h3>
   <pre><%= data.input %></pre>
-  <h2>Output</h2>
+  <h3>Output</h3>
   <pre><%= data.output %></pre>
-  <h2>Your Output</h2>
+  <h3>Your Output</h3>
   <% if (data.viewKind === "beforeExec") { %>
   <div>Not yet executed.</div>
   <% } else if (data.viewKind === "success") { %>
