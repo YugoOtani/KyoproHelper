@@ -47,6 +47,7 @@
       white-space: pre-wrap;
       background-color: rgb(221, 221, 221);
       padding: 6px;
+      min-height: 15px;
     }
 
     strong {
@@ -69,7 +70,7 @@
 
 <body>
 
-  <div class="title"><strong><%= data.title %></strong></div>
+  <h1><%= data.title %></h1>
   <div id="result"></div>
 
   <strong>Input</strong>
@@ -78,6 +79,7 @@
   <pre><%= data.output %></pre>
   <% if (data.viewKind === "beforeExec") { %>
   <strong>Your Output</strong>
+  <pre><%= '\n' %></pre>
   <% } else if (data.viewKind === "success") { %>
   <strong>Your Output</strong>
   <span class="success">✅ Passed </span>
