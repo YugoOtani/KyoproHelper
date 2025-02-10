@@ -29,6 +29,10 @@
       {
         "command": "testCasesView.openTestResult",
         "title": "Open Test Result Window"
+      },
+      {
+        "command": "testCasesView.runAllTests",
+        "title": "Run All Tests"
       }
     ],
     "views": {

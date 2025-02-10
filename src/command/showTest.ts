@@ -21,6 +21,7 @@ export function showTestCaseHandler(
     extensionUri: vscode.Uri) {
     const state = new TestCaseViewState(
         "beforeExec",
+        [],
         diff,
         caseId,
         ""

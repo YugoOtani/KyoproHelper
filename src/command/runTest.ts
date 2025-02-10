@@ -58,6 +58,7 @@ export function runTest(
     const expected = testCase.output.trim();
     const state = new TestCaseViewState(
         (output === expected) ? "success" : "fail",
+        [],
         diff,
         caseId,
         output

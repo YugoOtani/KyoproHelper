@@ -9,6 +9,7 @@ import * as path from 'path';
 import { WebView } from './view/webView';
 import assert from 'assert';
 import { runTest } from './command/runTest';
+import { getRunAllTestsCommand, runAllTests } from './command/runAllTests';
 
 // defined in package.json
 export const treeViewId = "testCasesView";
@@ -35,8 +36,9 @@ export function activate(context: vscode.ExtensionContext) {
 	AppState.loadState(problemsDirPath)
 
 	// TreeView(サイドバーの部分)の登録
+	const onAllTestsClicked = getRunAllTestsCommand
 	const onTestCaseClicked = getShowTestCaseCommand
-	const treeViewProvider = new TestCasesProvider(onTestCaseClicked)
+	const treeViewProvider = new TestCasesProvider(onAllTestsClicked, onTestCaseClicked)
 	vscode.window.registerTreeDataProvider(treeViewId, treeViewProvider);
 
 	// WebViewの作成
@@ -51,7 +53,12 @@ export function activate(context: vscode.ExtensionContext) {
 					vscode.window.showErrorMessage("Open test case view first");
 					return;
 				}
-				runTest(state.diff, state.case_id, workspaceRoot, context.extensionUri);
+				if (state.kind === "runAll") {
+					runAllTests(state.diff, workspaceRoot, context.extensionUri);
+				} else {
+					runTest(state.diff, state.case_id, workspaceRoot, context.extensionUri);
+				}
+
 			}
 		)
 	);
@@ -70,6 +77,15 @@ export function activate(context: vscode.ExtensionContext) {
 	runButton.show();
 	
 	context.subscriptions.push(runButton);*/
+	// runAllTestsコマンドの登録
+	context.subscriptions.push(
+		vscode.commands.registerCommand(
+			commandId("runAllTestCases"),
+			(diff) => {
+				runAllTests(diff, workspaceRoot, context.extensionUri);
+			}
+		)
+	);
 }
 
 export function deactivate() { }

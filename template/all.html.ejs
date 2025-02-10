@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Results</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .test-case {
+      background: white;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+
+
+
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+
+
+    strong {
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    .success {
+      color: green;
+      font-size: 0.8em;
+    }
+
+    .fail {
+      color: red;
+      font-size: 0.8em;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <h1><%= data.title %></h1>
+  <div id="result"></div>
+  <% let l = data.results.length; %>
+  <% for (let i = 0; i < l; i++) { %>
+  <div class="test-case">
+    case <%= data.results[i].id %>
+    <% if (data.results[i].res) { %>
+    <span class="success">✅ Passed </span>
+    <% } else { %>
+    <span class="fail">❌ Failed </span>
+    <% } %>
+  </div>
+  <% } %>
+
+</body>
+
+</html>
